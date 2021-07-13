@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, redirect
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 from dotenv import load_dotenv
@@ -70,19 +70,19 @@ try:
     # GET: Fetch posts by cityId from the database
     @app.route('/cities/<int:city_id>')
     def fetch_by_id(city_id=None):
-        all_posts= Post.query.filter(city_id = city_id)
-
+        all_posts= Post.query.filter(city_id = city_id) 
         return {"posts": tuple(map(lambda p : p.as_dict(), all_posts))}
 
     # POST: Create posts and add them to the database
     @app.route('/cities/<int:city_id>/create', methods=['POST'])
-    def add_post(city_id, post_id):
+    def add_post(city_id):
         if request.method == 'POST':
             data = request.json()
-            new_post = Post(post_id = post_id, city_id = city_id, zip_code = data["zip_code"], available_date = data["available_date"], contact_email = data["contact_email"], image = data["image"], twenty_hookup = data["twenty_hookup"], thirty_hookup = data["thirty_hookup"], fifty_hookup = data["fifty_hookup"], wifi = data["wifi"], water = data["water"])
+            new_post = Post(city_id = city_id, zip_code = data["zip_code"], available_date = data["available_date"], contact_email = data["contact_email"], image = data["image"], twenty_hookup = data["twenty_hookup"], thirty_hookup = data["thirty_hookup"], fifty_hookup = data["fifty_hookup"], wifi = data["wifi"], water = data["water"])
             db.session.add(new_post)
-            db.commit()
-            return 'Form submitted'
+            db.session.commit()
+            return 'Form submitted!'
+            # return redirect(url_for('fetch_all_posts'))
         else:
             return 'Form submission failed'
 
