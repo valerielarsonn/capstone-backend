@@ -3,7 +3,6 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 from dotenv import load_dotenv
 import os 
-# import psycopg2
 
 load_dotenv()
 
@@ -19,8 +18,6 @@ CORS(app)
 
 app.config['SQLALCHEMY_DATABASE_URI']=f"postgresql://{DATABASE_USERNAME}:{DATABASE_PASSWORD}@localhost/{DATABASE}"
 
-print(app.config['SQLALCHEMY_DATABASE_URI'])
-# app.config['SQLALCHEMY_DATABASE_URI']='postgresql://postgres:Colorado2021@localhost/flask_van_cities'
 db = SQLAlchemy(app)
 
 class Post(db.Model):
@@ -52,17 +49,6 @@ class Post(db.Model):
     ## Method for Turning to Dictionary to send back as JSON
     def as_dict(self):
        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
-    # def __repr__(self):
-    #     return '<Email %>' % self.contact_email
-
-# @app.before_first_request
-# def create_table():
-#     db.create_all()
-
-    
-# @app.route('/')
-# def index():
-#     return '<h1>Hello!</h1>'
 
 
 try:
@@ -90,17 +76,17 @@ try:
 
     # POST: Create posts and add them to the database
     @app.route('/cities/<int:city_id>/create', methods=['POST'])
-    def add_post(city_id):
+    def add_post(city_id, post_id):
         if request.method == 'POST':
             data = request.json()
-            new_post = Post(city_id = city_id, zip_code = data["zip_code"])
+            new_post = Post(post_id = post_id, city_id = city_id, zip_code = data["zip_code"], available_date = data["available_date"], contact_email = data["contact_email"], image = data["image"], twenty_hookup = data["twenty_hookup"], thirty_hookup = data["thirty_hookup"], fifty_hookup = data["fifty_hookup"], wifi = data["wifi"], water = data["water"])
             db.session.add(new_post)
             db.commit()
             return 'Form submitted'
         else:
             return 'Form submission failed'
 
-    # DELETE: Delete movie by movieId from the database
+    # DELETE: Delete post by postId from the database
     @app.route('/cities/<int:post_id>', methods=['DELETE'])
     def delete_by_post_id(post_id):
         post_id = request.json()
