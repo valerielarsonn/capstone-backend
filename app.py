@@ -78,7 +78,7 @@ try:
     @app.route('/cities/<int:city_id>/create', methods=['POST'])
     def add_post(city_id):
         if request.method == 'POST':
-            data = request.json()
+            data = request.json
             new_post = Post(city_id = city_id, zip_code = data["zip_code"], available_date = data["available_date"], contact_email = data["contact_email"], image = data["image"], twenty_hookup = data["twenty_hookup"], thirty_hookup = data["thirty_hookup"], fifty_hookup = data["fifty_hookup"], wifi = data["wifi"], water = data["water"])
             db.session.add(new_post)
             db.session.commit()
@@ -90,7 +90,7 @@ try:
     # DELETE: Delete post by postId from the database
     @app.route('/cities/<int:post_id>', methods=['DELETE'])
     def delete_by_post_id(post_id):
-        post_id = request.json()
+        post_id = request.json
         post = Post.query.get(post_id)
         print(post_id['postId'])
         db.session.delete(post)
@@ -101,7 +101,7 @@ try:
     # PUT: Update post by postId from the database
     @app.route('/cities/<int:city_id>/posts/<int:post_id>/edit', methods=['PUT'])
     def update_by_post_id(city_id, post_id):
-        data = request.json()
+        data = request.json
         post = Post.query.get(post_id).update
         db.session.commit()
 
