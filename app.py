@@ -11,12 +11,15 @@ DATABASE = os.getenv('DATABASE')
 DATABASE_USERNAME = os.getenv('DATABASE_USERNAME')
 DATABASE_PASSWORD = os.getenv('DATABASE_PASSWORD')
 
+print (DATABASE)
 
 app = Flask(__name__)
 
 CORS(app)
 
-app.config['SQLALCHEMY_DATABASE_URI']='postgresql://(`DATABASE_USERNAME`):(`DATABASE_PASSWORD`)@localhost/(`DATABASE`)'
+app.config['SQLALCHEMY_DATABASE_URI']=f"postgresql://{DATABASE_USERNAME}:{DATABASE_PASSWORD}@localhost/{DATABASE}"
+
+print(app.config['SQLALCHEMY_DATABASE_URI'])
 # app.config['SQLALCHEMY_DATABASE_URI']='postgresql://postgres:Colorado2021@localhost/flask_van_cities'
 db = SQLAlchemy(app)
 
@@ -46,8 +49,11 @@ class Post(db.Model):
         self.wifi = wifi
         self.water = water
 
-    def __repr__(self):
-        return '<Email %>' % self.contact_email
+    ## Method for Turning to Dictionary to send back as JSON
+    def as_dict(self):
+       return {c.name: getattr(self, c.name) for c in self.__table__.columns}
+    # def __repr__(self):
+    #     return '<Email %>' % self.contact_email
 
 # @app.before_first_request
 # def create_table():
@@ -65,58 +71,52 @@ try:
     #     user=DATABASE_USERNAME,
     #     password=DATABASE_PASSWORD)
 
-    # cur = con.cursor()
+    # db = con.cursor()
 
     # GET: Fetch all posts from the database
     @app.route('/cities')
     def fetch_all_posts():
-        db.execute('SELECT * FROM posts')
-        rows = db.fetchall()
-        print(rows)
+        all_posts = Post.query.all()
+        print(all_posts)
 
-        return jsonify(rows)
+        return {"posts": tuple(map(lambda p : p.as_dict(), all_posts))}
 
     # GET: Fetch posts by cityId from the database
     @app.route('/cities/<int:city_id>')
     def fetch_by_id(city_id=None):
-        db.execute(f'SELECT * FROM posts WHERE city_id = {city_id}')
-        rows = db.fetchall()
-        print(rows)
+        all_posts= Post.query.filter(city_id = city_id)
 
-        return jsonify(rows)
+        return {"posts": tuple(map(lambda p : p.as_dict(), all_posts))}
 
     # POST: Create posts and add them to the database
-    @app.route('/cities/<int:city_id>/create', methods=['GET', 'POST'])
-    def add_post():
+    @app.route('/cities/<int:city_id>/create', methods=['POST'])
+    def add_post(city_id):
         if request.method == 'POST':
-            data = request.form.to_dict()
-            print(data)
-            db.execute("INSERT INTO posts (post_id, city_id, zip_code, available_date, contact_email, image, twenty_hookup, thirty_hookup, fifty_hookup, wifi, water ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)",
-                        (f"{data['post_id']}", f"{data['city_id']}", data['zip_code'], f"{data['available_date']}",
-                         f"{data['contact_email']}", f"{data['image']}", f"{data['twenty_hookup']}", data['thirty_hookup'], data['fifty_hookup'], data['wifi'], data['water']))
+            data = request.json()
+            new_post = Post(city_id = city_id, zip_code = data["zip_code"])
+            db.session.add(new_post)
             db.commit()
             return 'Form submitted'
         else:
             return 'Form submission failed'
 
     # DELETE: Delete movie by movieId from the database
-    @app.route('/cities/<int:city_id>', methods=['GET', 'DELETE'])
-    def delete_by_post_id():
-        post_id = request.form.to_dict()
+    @app.route('/cities/<int:post_id>', methods=['DELETE'])
+    def delete_by_post_id(post_id):
+        post_id = request.json()
+        post = Post.query.get(post_id)
         print(post_id['postId'])
-        db.execute(
-            f"DELETE FROM posts WHERE post_id = {post_id['postId']} RETURNING city_id")
-        db.commit()
+        db.session.delete(post)
+        db.session.commit()
 
         return 'Post Deleted'
 
     # PUT: Update post by postId from the database
-    @app.route('/cities/<int:city_id>/posts/<int:post_id>/edit', methods=['GET', 'PUT'])
-    def update_by_post_id():
-
-        db.execute(
-            'UPDATE posts SET city_id = `/<int:city_id>/` WHERE post_id = <int:post_id>')
-        db.commit()
+    @app.route('/cities/<int:city_id>/posts/<int:post_id>/edit', methods=['PUT'])
+    def update_by_post_id(city_id, post_id):
+        data = request.json()
+        post = Post.query.get(post_id).update
+        db.session.commit()
 
         return 'Post Updated'
 
