@@ -90,9 +90,7 @@ try:
     # DELETE: Delete post by postId from the database
     @app.route('/cities/<int:post_id>', methods=['DELETE'])
     def delete_by_post_id(post_id):
-        post_id = request.json
         post = Post.query.get(post_id)
-        print(post_id['postId'])
         db.session.delete(post)
         db.session.commit()
 
