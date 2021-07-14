@@ -99,8 +99,8 @@ try:
     # PUT: Update post by postId from the database
     @app.route('/cities/<int:city_id>/posts/<int:post_id>/edit', methods=['PUT'])
     def update_by_post_id(city_id, post_id):
-        data = request.json
-        post = Post.query.get(post_id).update
+        body = request.json
+        post = Post.query.get(post_id).update(body)
         db.session.commit()
 
         return 'Post Updated'
