@@ -101,6 +101,7 @@ try:
     def update_by_post_id(city_id, post_id):
         body = request.json
         post = Post.query.get(post_id).update(body)
+        print(post)
         db.session.commit()
 
         return 'Post Updated'
