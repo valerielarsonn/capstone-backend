@@ -76,8 +76,8 @@ try:
 
     # GET: Fetch posts by postId from the database
     @app.route('/cities/<int:city_id>/posts/<int:post_id>')
-    def fetch_by_id(post_id=None, city_id=None):
-        one_post= Post.query.filter_by(post_id=None, city_id = None) 
+    def fetch_by_id(city_id):
+        one_post= Post.query.filter_by(city_id = city_id) 
         return {"post": tuple(map(lambda p : p.as_dict(), one_post))}
 
     # POST: Create posts and add them to the database
@@ -97,7 +97,7 @@ try:
     # DELETE: Delete post by postId from the database
     @app.route('posts/<int:post_id>', methods=['DELETE'])
     def delete_by_post_id(post_id):
-        post = Post.query.get(post_id)
+        post = Post.query.filter_by(post_id)
         db.session.delete(post)
         db.session.commit()
 
