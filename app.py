@@ -95,7 +95,7 @@ try:
             return 'Form submission failed'
 
     # DELETE: Delete post by postId from the database
-    @app.route('/cities/<int:city_id>/posts/<int:post_id>', methods=['DELETE'])
+    @app.route('posts/<int:post_id>', methods=['DELETE'])
     def delete_by_post_id(post_id):
         post = Post.query.get(post_id)
         db.session.delete(post)
