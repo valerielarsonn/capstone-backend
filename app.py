@@ -86,7 +86,7 @@ try:
         if request.method == 'POST':
             data = request.json
             print(data)
-            new_post = Post(city_id = data["city_id"], zip_code = data["zip_code"], available_date = data["available_date"], contact_email = data["contact_email"], image = data["image"], twenty_hookup = data["twenty_hookup"], thirty_hookup = data["thirty_hookup"], fifty_hookup = data["fifty_hookup"], wifi = data["wifi"], water = data["water"])
+            new_post = Post(zip_code = data["zip_code"], available_date = data["available_date"], contact_email = data["contact_email"], image = data["image"], twenty_hookup = data["twenty_hookup"], thirty_hookup = data["thirty_hookup"], fifty_hookup = data["fifty_hookup"], wifi = data["wifi"], water = data["water"])
             db.session.add(new_post)
             db.session.commit()
             return 'Form submitted!'
