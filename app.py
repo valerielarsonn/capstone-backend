@@ -77,7 +77,7 @@ try:
     # GET: Fetch posts by postId from the database
     # @app.route('/cities/<int:city_id>/posts/<int:post_id>')
     # def fetch_by_id(city_id, post_id):
-    #     one_post= Post.query.get(post_id = post_id) 
+    #     one_post= Post.query.filter_by(post_id = post_id) 
     #     return {"posts": tuple(map(lambda p : p.as_dict(), one_post))}
 
     # POST: Create posts and add them to the database
