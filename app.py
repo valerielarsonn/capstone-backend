@@ -53,13 +53,6 @@ class Post(db.Model):
 
 
 try:
-    # con = psycopg2.connect(
-    #     database=DATABASE,
-    #     user=DATABASE_USERNAME,
-    #     password=DATABASE_PASSWORD)
-
-    # db = con.cursor()
-
     # GET: Fetch all posts from the database
     @app.route('/cities')
     def fetch_all_posts():
@@ -74,12 +67,6 @@ try:
         all_posts= Post.query.filter_by(city_id = city_id) 
         return {"posts": tuple(map(lambda p : p.as_dict(), all_posts))}
 
-    # GET: Fetch posts by postId from the database
-    # @app.route('/cities/<int:city_id>/posts/<int:post_id>')
-    # def fetch_by_id(city_id, post_id):
-    #     one_post= Post.query.filter_by(post_id = post_id) 
-    #     return {"posts": tuple(map(lambda p : p.as_dict(), one_post))}
-
     # POST: Create posts and add them to the database
     @app.route('/cities/<int:city_id>/create', methods=['POST'])
     def add_post(city_id):
@@ -90,7 +77,6 @@ try:
             db.session.add(new_post)
             db.session.commit()
             return 'Form submitted!'
-            # return redirect(url_for('fetch_all_posts'))
         else:
             return 'Form submission failed'
 
